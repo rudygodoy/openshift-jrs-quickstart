@@ -53,15 +53,14 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
    cp -ra ${_CUSTOMIZATION_DIR}/jasperreports.war/* ${_JRS_DEPLOY_DIR}/$_JRS_DEPLOYED
    echo "${_JRS_NAME} properties/configuration successfully updated, please access the portal after 2-5 minutes"
  else
-   echo "Downloading ${_JRS_NAME} : ${_JRS_DEPLOYING}"
-   cd ${OPENSHIFT_TMP_DIR}
-
    #Download the war
-   wget -q -O ${_JRS_DEPLOYING}.zip "http://d1zrxsx5g57hp8.cloudfront.net/${_JRS_DEPLOYING}.zip"
    if [ -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}.zip ]
     then
+       echo "Downloading ${_JRS_NAME} : ${_JRS_DEPLOYING}"
+       cd ${OPENSHIFT_TMP_DIR}
+       wget -q -O ${_JRS_DEPLOYING}.zip "http://d1zrxsx5g57hp8.cloudfront.net/${_JRS_DEPLOYING}.zip"
        echo "Extracting ${_JRS_NAME} ${_JRS_DEPLOYING}"
-       jar -xvf ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}
+       jar -xvf ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}.zip
    fi
 
    echo "Removing zip file"
