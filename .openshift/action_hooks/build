@@ -6,6 +6,8 @@
 # 
 # Script based on Liferay's quickstart.
 
+set -e
+
 #
 ## What version of JRS is currently getting deployed
 #
@@ -53,13 +55,17 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
  else
    echo "Downloading ${_JRS_NAME} : ${_JRS_DEPLOYING}"
    cd ${OPENSHIFT_TMP_DIR}
-   #Downlad the war
+
+   #Download the war
    wget -q -O ${_JRS_DEPLOYING}.zip "http://d1zrxsx5g57hp8.cloudfront.net/${_JRS_DEPLOYING}.zip"
-   if [ -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING} ]
+   if [ -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}.zip ]
     then
        echo "Extracting ${_JRS_NAME} ${_JRS_DEPLOYING}"
        jar -xvf ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}
    fi
+
+   echo "Removing zip file"
+   rm -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}.zip
 
    # update configurations
    cd ${_JRS_DEPLOYING}/buildomatic
@@ -67,8 +73,6 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
    chmod 755 ../apache-ant/bin/*
    chmod 755 js-ant
 
-   echo "Removing zip file"
-   rm -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}.zip
    echo "Update the custom configuration files like default*.properties, log4j-ext etc.,"
    erb ${_CUSTOMIZATION_DIR}/default_master.properties.erb > default_master.properties
 fi
