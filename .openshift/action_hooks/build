@@ -64,9 +64,10 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
    # update configurations
    cd ${_JRS_DEPLOYING}/buildomatic
    chmod 755 bin/*
-   chmod 755 ../apache-ant-bin/*
+   chmod 755 ../apache-ant/bin/*
    chmod 755 js-ant
 
+   rm -f ${_JRS_DEPLOYING}.zip
    echo "Update the custom configuration files like default*.properties, log4j-ext etc.,"
    cp -u ${_CUSTOMIZATION_DIR}/default_master.properties.erb .
    erb default_master.properties.erb > default_master.properties
@@ -77,7 +78,6 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
    ./js-ant init-js-db-ce
    echo "------> Running: js-ant import-minimal-pro ..."
    ./js-ant import-minimal-ce
-
    echo "-----> Running: js-ant deploy-webapp-pro ..."
    ./js-ant deploy-webapp-ce
    echo " done"
