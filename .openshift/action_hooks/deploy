@@ -92,3 +92,18 @@ if [ "5432" = "$OPENSHIFT_POSTGRESQL_DB_PORT" ]
     echo "Database '$OPENSHIFT_APP_NAME' initialized already with 'portal-minimal-postgresql.sql', skipping import."
   fi
 fi 
+
+_JRS_DEPLOYING=`head -1 $OPENSHIFT_REPO_DIR/.openshift/action_hooks/deploying-war-info`
+
+cd ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}
+   # echo "------> Running: js-ant create-js-db ..."
+   # ./js-ant create-js-db
+echo "------> Running: js-ant init-js-db-ce ..."
+./js-ant init-js-db-ce
+echo "------> Running: js-ant import-minimal-ce ..."
+./js-ant import-minimal-ce
+echo "-----> Running: js-ant deploy-webapp-ce ..."
+./js-ant deploy-webapp-ce
+echo " done"
+   #update the currently deployed war
+echo ${_JRS_DEPLOYING} >> ${OPENSHIFT_DATA_DIR}/deployed-war-info
