@@ -1,0 +1,69 @@
+#!/bin/bash
+# This is a simple build script and will be executed on your CI system if 
+# available.  Otherwise it will execute while your application is stopped
+# before the deploy step.  This script gets executed directly, so it
+# could be python, php, ruby, etc.
+# 
+# Script based on Liferay's quickstart.
+
+#
+## What version of JRS is currently getting deployed
+#
+_JRS_NAME="JasperReports Server"
+_JRS_DEPLOYING=`head -1 $OPENSHIFT_REPO_DIR/.openshift/action_hooks/deploying-war-info`
+
+#
+## What version of JRS is already deployed
+#
+_JRS_DEPLOYED=""
+
+#
+## JRS deployment directory, its the core portal and not the plugins
+#
+
+_JRS_DEPLOY_DIR="${OPENSHIFT_DATA_DIR}jasperserver"
+
+#
+## Create the directory if it does not exist
+#
+if [ ! -d "$_JRS_DEPLOY_DIR" ]
+ then
+   echo "Creating $_JRS_NAME $_JRS_DEPLOY_DIR"
+   mkdir "$_JRS_DEPLOY_DIR"
+   mkdir "$_JRS_DEPLOY_DIR/$_JRS_DEPLOYING"
+fi
+
+#
+## The directory where all you customizations are placed things like portal-ext.properties, log4j-ext.xml etc.,
+#
+_CUSTOMIZATION_DIR="${OPENSHIFT_REPO_DIR}/customization"
+
+if [ -f "${OPENSHIFT_DATA_DIR}/deployed-war-info" ]
+ then
+  _JRS_DEPLOYED=`head -1 ${OPENSHIFT_DATA_DIR}/deployed-war-info`
+   echo "Last deployed WAR : ${_JRS_DEPLOYED}"
+fi
+
+#Download the JRS War
+if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
+ then
+   echo "${_JRS_NAME} already deployed, updating default*.properties"
+   cp -ra ${_CUSTOMIZATION_DIR}/ROOT.war/* ${_JRS_DEPLOY_DIR}/$_JRS_DEPLOYED
+   echo "${_JRS_NAME} properties/configuration successfully updated, please access the portal after 2-5 minutes"
+ else
+   echo "Downloading ${_JRS_NAME} : ${_JRS_DEPLOYING}"
+   cd ${OPENSHIFT_TMP_DIR}
+   #Downlad the war
+   wget -O ${_JRS_DEPLOYING}  -v "http://d1zrxsx5g57hp8.cloudfront.net/${_JRS_DEPLOYING}"
+   cd ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
+   if [ -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING} ]
+    then
+       echo "Extracting ${_JRS_NAME} ${_JRS_DEPLOYING} as default application ROOT.war"
+       jar -xvf ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}
+   fi
+   # update configurations
+   echo "Update the custom configuration files like default*.properties, log4j-ext etc.,"
+   cp -urv ${_CUSTOMIZATION_DIR}/ROOT.war/* ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
+   #update the currently deployed war
+   echo ${_JRS_DEPLOYING} >> ${OPENSHIFT_DATA_DIR}/deployed-war-info
+fi
