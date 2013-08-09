@@ -54,16 +54,34 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
    echo "Downloading ${_JRS_NAME} : ${_JRS_DEPLOYING}"
    cd ${OPENSHIFT_TMP_DIR}
    #Downlad the war
-   wget -O ${_JRS_DEPLOYING}  -v "http://d1zrxsx5g57hp8.cloudfront.net/${_JRS_DEPLOYING}"
-   cd ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
+   wget -q -O ${_JRS_DEPLOYING}.zip "http://d1zrxsx5g57hp8.cloudfront.net/${_JRS_DEPLOYING}.zip"
    if [ -f ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING} ]
     then
-       echo "Extracting ${_JRS_NAME} ${_JRS_DEPLOYING} as default application ROOT.war"
+       echo "Extracting ${_JRS_NAME} ${_JRS_DEPLOYING}"
        jar -xvf ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}
    fi
+
    # update configurations
+   cd ${_JRS_DEPLOYING}/buildomatic
+   chmod 755 bin/*
+   chmod 755 ../apache-ant-bin/*
+   chmod 755 js-ant
+
    echo "Update the custom configuration files like default*.properties, log4j-ext etc.,"
-   cp -urv ${_CUSTOMIZATION_DIR}/jasperreports.war/* ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
+   cp -u ${_CUSTOMIZATION_DIR}/default_master.properties .
+   ./js-ant create-js-db
+   echo "------> Running: js-ant create-js-db ..."
+   ./js-ant create-js-db
+   echo "------> Running: js-ant init-js-db-pro ..."
+   ./js-ant init-js-db-ce
+   echo "------> Running: js-ant import-minimal-pro ..."
+   ./js-ant import-minimal-ce
+
+   echo "-----> Running: js-ant deploy-webapp-pro ..."
+   ./js-ant deploy-webapp-ce
+   echo " done"
+
+   #cp -urv ${_CUSTOMIZATION_DIR}/jasperreports.war/* ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
    #update the currently deployed war
    echo ${_JRS_DEPLOYING} >> ${OPENSHIFT_DATA_DIR}/deployed-war-info
 fi
