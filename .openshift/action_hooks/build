@@ -48,7 +48,7 @@ fi
 if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
  then
    echo "${_JRS_NAME} already deployed, updating default*.properties"
-   cp -ra ${_CUSTOMIZATION_DIR}/ROOT.war/* ${_JRS_DEPLOY_DIR}/$_JRS_DEPLOYED
+   cp -ra ${_CUSTOMIZATION_DIR}/jasperreports.war/* ${_JRS_DEPLOY_DIR}/$_JRS_DEPLOYED
    echo "${_JRS_NAME} properties/configuration successfully updated, please access the portal after 2-5 minutes"
  else
    echo "Downloading ${_JRS_NAME} : ${_JRS_DEPLOYING}"
@@ -63,7 +63,7 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
    fi
    # update configurations
    echo "Update the custom configuration files like default*.properties, log4j-ext etc.,"
-   cp -urv ${_CUSTOMIZATION_DIR}/ROOT.war/* ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
+   cp -urv ${_CUSTOMIZATION_DIR}/jasperreports.war/* ${_JRS_DEPLOY_DIR}/${_JRS_DEPLOYING}
    #update the currently deployed war
    echo ${_JRS_DEPLOYING} >> ${OPENSHIFT_DATA_DIR}/deployed-war-info
 fi
