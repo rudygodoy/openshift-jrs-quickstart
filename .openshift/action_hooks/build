@@ -69,7 +69,7 @@ if [ "$_JRS_DEPLOYING" = "$_JRS_DEPLOYED" ]
 
    echo "Update the custom configuration files like default*.properties, log4j-ext etc.,"
    cp -u ${_CUSTOMIZATION_DIR}/default_master.properties.erb .
-   erb default_master.properties.erb default_master.properties
+   erb default_master.properties.erb > default_master.properties
    ./js-ant create-js-db
    echo "------> Running: js-ant create-js-db ..."
    ./js-ant create-js-db
