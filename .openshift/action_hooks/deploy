@@ -8,7 +8,8 @@ set -e
 
 _JRS_DEPLOYING=`head -1 $OPENSHIFT_REPO_DIR/.openshift/action_hooks/deploying-war-info`
 
-cd ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}
+cd ${OPENSHIFT_TMP_DIR}/${_JRS_DEPLOYING}/buildomatic
+
    # echo "------> Running: js-ant create-js-db ..."
    # ./js-ant create-js-db
 echo "------> Running: js-ant init-js-db-ce ..."
